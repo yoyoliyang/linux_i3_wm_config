@@ -1,9 +1,13 @@
 #!/usr/bin/python3
 
 import os
+# 控制音量腳本
 
 status = {}
-amixer_list = os.popen('amixer -c 1').read().split('\n')
+# 声卡控制器编号，不同的机器未必相同
+c = 0
+amixer_list = lambda c: os.popen(f'amixer -c {c}').read()
+amixer_list = amixer_list(c).split("\n")
 n = 0
 status_index = -1
 for index, i in enumerate(amixer_list):
@@ -16,21 +20,21 @@ for index, i in enumerate(amixer_list):
         status_result.append(i.strip('  '))
         status[amixer_list[status_index]] = status_result
 
-for _ in status:
-    if 'Master' in _:
-        master = status[_][-1]
-    if 'Speaker' in _:
-        speaker = status[_][-1]
+for s in status:
+    if 'Master' in s:
+        master = status[s][-1]
+    if 'Speaker' in s:
+        speaker = status[s][-1]
 
 if ('[on]' in master and '[off]' in speaker):
-    os.system('amixer -c 1 sset Master mute')
+    os.system(f'amixer -c {c} sset Master mute')
 
 if ('[off]' in master and '[off]' in speaker):
-    os.system('amixer -c 1 sset Master unmute')
-    os.system('amixer -c 1 sset Speaker unmute')
+    os.system(f'amixer -c {c} sset Master unmute')
+    os.system(f'amixer -c {c} sset Speaker unmute')
 
 if ('[on]' in master and '[on]' in speaker):
-    os.system('amixer -c 1 sset Master mute')
+    os.system(f'amixer -c {c} sset Master mute')
 
 if ('[off]' in master and '[on]' in speaker):
-    os.system('amixer -c 1 sset Master unmute')
+    os.system(f'amixer -c {c} sset Master unmute')
