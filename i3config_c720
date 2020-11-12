@@ -1,13 +1,14 @@
 # i3 Ctrl键: Control, Alt键: Mod1, 和sway不同
 # touchpad灵敏度配置xinput
-# 查看设备:xinput list, 查看设备属性:xinput list-props 设备id
+# 查看设备:xinput list, 查看设备属性:xinput list-props 设备id 或名称
 exec --no-startup-id xinput --set-prop "pointer:Cypress APA Trackpad (cyapa)" "libinput Accel Speed" -0.2
+exec --no-startup-id xinput --set-prop 9  "libinput Tapping Enabled" 1
 # fcitx
 exec --no-startup-id fcitx
 # wallpaper
-exec --no-startup-id feh --bg-max /home/yang/wp.jpg
+exec --no-startup-id feh --bg-max $HOME/wp.jpg
 # urxvt style
-exec xrdb -load /etc/Xresources
+# exec xrdb -load /etc/Xresources
 
 # window fonts setting
 title_align center
@@ -29,6 +30,9 @@ set $term alacritty
 # Your preferred application launcher
 bindsym $mod+d exec dmenu_run
 
+# border
+default_border pixel 6
+
 
 ### Key bindings
 #
@@ -39,16 +43,14 @@ bindsym $mod+d exec dmenu_run
     bindsym Control+F4 exec screenshot.py
 
     # volume
-    bindsym F10 exec amixer set Master playback 1000+
-    bindsym Control+F10 exec amixer set Master playback 2000+
-    bindsym F9 exec amixer set Master playback 1000-
-    bindsym Control+F9 exec amixer set Master playback 2000-
-    bindsym F8 exec amixer set Master toggle
+    bindsym F10 exec pactl set-sink-volume `pactl info | grep "Default Sink:" | awk '{print $3}'` +5%
+    bindsym F9 exec pactl set-sink-volume `pactl info | grep "Default Sink:" | awk '{print $3}'` -5%
+    bindsym F8 exec pactl set-sink-mute `pactl info | grep "Default Sink:" | awk '{print $3}'` toggle
     # display brightness
-    bindsym F6 exec echo $(($(cat /sys/class/backlight/intel_backlight/brightness) - 10)) > /sys/class/backlight/intel_backlight/brightness
-    bindsym F7 exec echo $(($(cat /sys/class/backlight/intel_backlight/brightness) + 10)) > /sys/class/backlight/intel_backlight/brightness
-    bindsym Control+F6 exec echo $(($(cat /sys/class/backlight/intel_backlight/brightness) - 100)) > /sys/class/backlight/intel_backlight/brightness
-    bindsym Control+F7 exec echo $(($(cat /sys/class/backlight/intel_backlight/brightness) + 100)) > /sys/class/backlight/intel_backlight/brightness
+    bindsym F6 exec xbacklight -inc 10
+    bindsym F7 exec xbacklight -dec 10
+    bindsym Control+F6 xbacklight -inc 20 
+    bindsym Control+F7 xbacklight -dec 20
     # start a terminal
     bindsym $mod+t exec $term 
     bindsym $mod+b exec google-chrome
@@ -73,8 +75,8 @@ bindsym $mod+d exec dmenu_run
     bindsym $mod+$right focus right
     # or use $mod+[up|down|left|right]
     # 切换工作区脚本（左、右）
-    bindsym $mod+Left exec workspace.py
-    bindsym $mod+Right exec workspace_right.py
+    bindsym $mod+Left exec workspace left
+    bindsym $mod+Right exec workspace right 
 #    bindsym $mod+Up focus up
 #    bindsym $mod+Right focus right
 
